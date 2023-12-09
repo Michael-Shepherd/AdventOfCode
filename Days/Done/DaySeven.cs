@@ -35,7 +35,7 @@ public class DaySeven
 
     public static long Handle()
     {
-        return HandleStepTwo();
+        return HandleStepOne();
     }
 
     public static long HandleStepOne()
