@@ -47,7 +47,6 @@ public static class DayNine
     {
         var input = InputReader.Get(".\\input\\nine.txt");
 
-
         long sumOfAdditions = 0;
         foreach (var line in input)
         {
@@ -65,6 +64,7 @@ public static class DayNine
                 var distinctCurrent = newCurrentNumbers.Distinct();
                 if (distinctCurrent.Count() == 1 && distinctCurrent.First() == 0)
                 {
+                    numberRows.Add(newCurrentNumbers);
                     break;
                 }
                 numberRows.Add(newCurrentNumbers);
@@ -75,24 +75,20 @@ public static class DayNine
             {
                 Console.WriteLine(string.Join(" ", nums));
             }
-            Console.WriteLine();
+            var firstNumbers = numberRows.Select(n => n.First()).Reverse().ToArray();
 
-            var first = numberRows.Select(n => n.First()).ToList();
-            first.Reverse();
-            first.Add(originalFirst);
-            for (int i = 0; i < first.Count(); i++)
+            Console.WriteLine("First Numbers: " + string.Join(" ", firstNumbers));
+
+            var differences = new List<long>() { 0 };
+            for (int i = 1; i < firstNumbers.Length; i++)
             {
-                if (i % 2 == 0)
-                {
-                    first[i] = -first[i];
-                }
+                Console.WriteLine(firstNumbers[i] + " - " + differences[i - 1] + " = " + (firstNumbers[i] - differences[i - 1]));
+                differences.Add(firstNumbers[i] - differences[i - 1]);
             }
 
-            Console.WriteLine(line + ": " + string.Join(", ", first));
-            Console.WriteLine(line + " Result: " + first.Sum());
-            sumOfAdditions += first.Sum();
-            Console.WriteLine("**********");
-
+            Console.WriteLine("Differences: " + string.Join(" ", differences));
+            Console.WriteLine("Result? " + (originalFirst - differences.Last()));
+            sumOfAdditions += originalFirst - differences.Last();
         }
 
         return sumOfAdditions;
