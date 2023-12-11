@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.VisualBasic;
 using Utilities;
 
@@ -498,7 +499,7 @@ public static class DayTen
         return (hasPathToWall, groupList, listOfParents);
     }
 
-    private bool IsValidRunningAlongPipeOrIntoEmptySpace(List<List<string>> input, CoOrd current, CoOrd next)
+    private static bool IsValidRunningAlongPipeOrIntoEmptySpace(List<List<string>> input, CoOrd current, CoOrd next)
     {
         string upDown = "|";
         string leftRight = "-";
@@ -515,9 +516,9 @@ public static class DayTen
         var right = new CoOrd(current.row, current.col + 1);
 
         var isUp = next == up;
-        var isDown = next == up;
-        var isLeft = next == up;
-        var isRight = next == up;
+        var isDown = next == down;
+        var isLeft = next == left;
+        var isRight = next == right;
 
         var currentTile = input[current.row][current.col];
         var nextTile = ground;
@@ -680,6 +681,6 @@ public static class DayTen
                 return true;
             }
         }
+        return false;
     }
-
 }
