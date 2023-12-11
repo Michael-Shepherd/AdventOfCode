@@ -498,4 +498,188 @@ public static class DayTen
         return (hasPathToWall, groupList, listOfParents);
     }
 
+    private bool IsValidRunningAlongPipeOrIntoEmptySpace(List<List<string>> input, CoOrd current, CoOrd next)
+    {
+        string upDown = "|";
+        string leftRight = "-";
+        string bottomRight = "L";
+        string bottomLeft = "J";
+        string topRight = "F";
+        string topLeft = "7";
+        string ground = ".";
+        string start = "S";
+
+        var up = new CoOrd(current.row - 1, current.col);
+        var down = new CoOrd(current.row + 1, current.col);
+        var left = new CoOrd(current.row, current.col - 1);
+        var right = new CoOrd(current.row, current.col + 1);
+
+        var isUp = next == up;
+        var isDown = next == up;
+        var isLeft = next == up;
+        var isRight = next == up;
+
+        var currentTile = input[current.row][current.col];
+        var nextTile = ground;
+
+        try
+        {
+            nextTile = input[current.row][current.col];
+        }
+        catch (ArgumentNullException e)
+        {
+            // false if next tile is out of bounds
+            return false;
+        }
+
+
+        if (currentTile == ground)
+        {
+            if (nextTile == ground)
+            {
+                return true;
+            }
+            else if (new List<string>() { bottomRight, bottomLeft, topRight, topLeft, start }.Contains(nextTile))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (currentTile == upDown)
+        {
+            if (nextTile == ground || nextTile == leftRight)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        if (currentTile == leftRight)
+        {
+            if (nextTile == ground || nextTile == upDown)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        if (currentTile == bottomRight)
+        {
+            if (isUp)
+            {
+                if (nextTile == upDown || nextTile == topRight || nextTile == topLeft || nextTile == bottomRight)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (isDown)
+            {
+                if (nextTile == leftRight || nextTile == upDown || nextTile == bottomLeft || nextTile == bottomRight)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else if (isLeft)
+            {
+                if (nextTile == leftRight || nextTile == upDown || nextTile == bottomRight || nextTile == topRight)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else if (isRight)
+            {
+                if (nextTile == upDown || nextTile == bottomRight || nextTile == ground)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        if (currentTile == bottomLeft)
+        {
+            if (isUp)
+            {
+                if (nextTile == upDown || nextTile == topRight || nextTile == topLeft)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (isDown)
+            {
+                if (nextTile == leftRight || nextTile == upDown || nextTile == bottomLeft || nextTile == bottomRight)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else if (isLeft)
+            {
+                if (nextTile == upDown || nextTile == ground || nextTile == bottomLeft)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else if (isRight)
+            {
+                if (nextTile == leftRight || nextTile == upDown || nextTile == bottomLeft || nextTile == topLeft)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        if (currentTile == topRight)
+        {
+            if (isUp)
+            {
+                if (nextTile == topRight || nextTile == upDown || nextTile == topLeft || nextTile == leftRight)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else if (isDown)
+            {
+                if (nextTile == leftRight || nextTile == topRight || nextTile == topLeft || nextTile == ground)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else if (isLeft)
+            {
+                if (nextTile == upDown || nextTile == leftRight || nextTile == topRight || nextTile == bottomRight)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else if (isRight)
+            {
+                if (nextTile == upDown || nextTile == ground || nextTile == topRight || nextTile == bottomRight)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+    }
+
 }

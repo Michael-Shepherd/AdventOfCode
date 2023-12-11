@@ -7,3 +7,16 @@
 .|II||II|.
 .L--JL--J.
 ..........
+
+string upDown = "|";
+string leftRight = "-";
+string bottomRight = "L";
+string bottomLeft = "J";
+string topRight = "F";
+string topLeft = "7";
+string ground = ".";
+string start = "S";
+
+
+ F
+
