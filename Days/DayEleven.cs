@@ -7,7 +7,7 @@ public static class DayEleven
 {
     public static long Handle()
     {
-        return HandleStepOne();
+        return HandleStepTwo();
     }
 
     public static long HandleStepOne()
@@ -205,7 +205,73 @@ public static class DayEleven
 
     public static long HandleStepTwo()
     {
-        var input = InputReader.Get(".\\input\\day_seven_input.txt");
+        var input = InputReader.Get(".\\input\\eleven.txt");
+        var rowsToExpandIndices = new List<int>();
+        var columnsToExpandIndices = new List<int>();
+        var expansionMultiplier = 2;
+        var galaxyMatrix = new List<List<int>>();
+        var galaxyCount = 0;
+
+        // ROWS
+        foreach (var line in input)
+        {
+            var intList = line.Select(c => c == '.' ? 0 : ++galaxyCount).ToList();
+
+            if (intList.Sum() == 0)
+            {
+                for (int i = 0; i < expansionMultiplier; i++)
+                {
+                    galaxyMatrix.Add(intList);
+                }
+            }
+            else
+            {
+                galaxyMatrix.Add(intList);
+            }
+        }
+
+        // COLS
+        var emptyColumnIndices = new List<int>();
+        for (int col = 0; col < galaxyMatrix[0].Count(); col++)
+        {
+            var column = new List<int>();
+            foreach (var row in galaxyMatrix)
+            {
+                column.Add(row[col]);
+            }
+
+            if (column.Sum() == 0)
+            {
+                emptyColumnIndices.Add(col);
+            }
+        }
+
+        var numberOfAddedCols = 0;
+        var gap = new int[expansionMultiplier - 1].ToList();
+        for (int row = 0; row < galaxyMatrix.Count(); row++)
+        {
+            numberOfAddedCols = 0;
+            foreach (var index in emptyColumnIndices)
+            {
+                var insertIndex = index + numberOfAddedCols;
+                // Console.WriteLine(insertIndex + " " + string.Join(" ", galaxyMatrix[row]));
+                galaxyMatrix[row].InsertRange(index + numberOfAddedCols, gap);
+                numberOfAddedCols += gap.Count();
+                Console.WriteLine(string.Join(" ", galaxyMatrix[row]));
+            }
+        }
+
+
+        foreach (var line in galaxyMatrix)
+        {
+            Console.WriteLine(string.Join(" ", line));
+        }
+
         return -1;
+    }
+
+    public static int ManhattanDistance(int x1, int x2, int y1, int y2)
+    {
+        return Math.Abs(x1 - x2) + Math.Abs(y1 - y2);
     }
 }
