@@ -15,6 +15,60 @@ public static class DayTwelve
         return HandleStepOne();
     }
 
+    public static long HandleStepOneDifferently()
+    {
+
+    }
+
+    // // if false, returns the failed prefix to filter out
+    // private static (bool, string) DoesLineProduceCorrectCombo(string lineData, int comboToCheck)
+    // {
+    //     var previousChar = lineData.First();
+    //     var currentCharCount = 0;
+    //     int? resultInt = null;
+    //     var resultString = "";
+    //     var isCorrectCombo = false;
+
+    //     for (int i = 0; i < lineData.Length; i++)
+    //     {
+    //         var character = lineData[i];
+    //         resultString += character;
+    //         if (character == previousChar)
+    //         {
+    //             currentCharCount++;
+    //         }
+    //         else
+    //         {
+    //             if (previousChar == DAMAGED)
+    //             {
+    //                 resultInt = int.Parse((resultInt is null ? "" : resultInt.ToString()) + currentCharCount.ToString());
+    //                 var diffInComboLenght = comboToCheck.Length() - resultInt?.Length() ?? 0;
+    //                 if (diffInComboLenght == 0)
+    //                 {
+    //                     break;
+    //                 }
+    //                 else if ((comboToCheck / (10 * diffInComboLenght)) != resultInt)
+    //                 {
+
+    //                 }
+    //             }
+    //             currentCharCount = 1;
+    //         }
+
+
+    //         previousChar = character;
+    //     }
+
+    //     if (previousChar != WORKING)
+    //     {
+    //         resultInt = int.Parse((resultInt is null ? "" : resultInt.ToString()) + currentCharCount.ToString());
+    //     }
+
+    //     return resultInt ?? 0;
+    // }
+
+
+
     public static long HandleStepOne()
     {
         var input = InputReader.Get(".\\input\\twelve.txt");
