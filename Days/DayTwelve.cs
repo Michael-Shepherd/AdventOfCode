@@ -15,10 +15,10 @@ public static class DayTwelve
         return HandleStepOne();
     }
 
-    public static long HandleStepOneDifferently()
-    {
+    // public static long HandleStepOneDifferently()
+    // {
 
-    }
+    // }
 
     // // if false, returns the failed prefix to filter out
     // private static (bool, string) DoesLineProduceCorrectCombo(string lineData, int comboToCheck)

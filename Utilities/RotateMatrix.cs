@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Utilities;
 
 public static class RotateMatrix
@@ -33,5 +35,38 @@ public static class RotateMatrix
         }
 
         return returnList;
+    }
+
+    public static List<List<char>> TurnRight(this List<List<char>> inputMatrix)
+    {
+        var newList = new List<List<char>>();
+
+        for (int col = 0; col < inputMatrix[0].Count; col++)
+        {
+            var colToRow = new List<char>();
+            for (int row = 0; row < inputMatrix.Count; row++)
+            {
+                colToRow.Insert(0, inputMatrix[row][col]);
+            }
+            newList.Add(colToRow);
+        }
+        return newList;
+    }
+
+    public static List<List<char>> TurnLeft(this List<List<char>> inputMatrix)
+    {
+        var newListLeft = new List<List<char>>();
+
+        for (int col = 0; col < inputMatrix[0].Count; col++)
+        {
+            var colToRow = new List<char>();
+            for (int row = 0; row < inputMatrix.Count; row++)
+            {
+                colToRow.Add(inputMatrix[row][col]);
+            }
+            newListLeft.Insert(0, colToRow);
+        }
+
+        return newListLeft;
     }
 }
