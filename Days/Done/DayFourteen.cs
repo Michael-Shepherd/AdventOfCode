@@ -53,7 +53,7 @@ public static class DayFourteen
             Console.WriteLine(string.Join(" ", line));
         }
 
-        inputMatrix = inputMatrix.ShiftNorth(columnBlockRowIndices, roundCoordinates);
+        inputMatrix = inputMatrix.ShiftNorth();
         Console.WriteLine("\nShifted:");
         foreach (var line in inputMatrix)
         {
@@ -87,7 +87,7 @@ public static class DayFourteen
         return load;
     }
 
-    public static List<List<char>> ShiftNorth(this List<List<char>> inputMatrix, Dictionary<int, List<int>> columnBlockInddices = null, List<(int, int)> roundCdoords = null)
+    public static List<List<char>> ShiftNorth(this List<List<char>> inputMatrix)
     {
         var newMatrix = new List<List<char>>();
         var (columnBlockIndices, roundCoords) = GetBlocksAndArounds(inputMatrix);
@@ -134,7 +134,7 @@ public static class DayFourteen
                     nextRowIndex--;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 continue;
             }
@@ -150,7 +150,7 @@ public static class DayFourteen
 
         var (newColumnBlockIndices, newRoundCoords) = GetBlocksAndArounds(newMatrix);
 
-        newMatrix = newMatrix.ShiftNorth(newColumnBlockIndices, newRoundCoords);
+        newMatrix = newMatrix.ShiftNorth();
 
         newMatrix = newMatrix.TurnLeft();
         newMatrix = newMatrix.TurnLeft();
@@ -164,7 +164,7 @@ public static class DayFourteen
         var newMatrix = inputMatrix.TurnLeft();
         var (newColumnBlockIndices, newRoundCoords) = GetBlocksAndArounds(newMatrix);
 
-        newMatrix = newMatrix.ShiftNorth(newColumnBlockIndices, newRoundCoords);
+        newMatrix = newMatrix.ShiftNorth();
 
         newMatrix = newMatrix.TurnRight();
 
@@ -176,7 +176,7 @@ public static class DayFourteen
         var newMatrix = inputMatrix.TurnRight();
         var (newColumnBlockIndices, newRoundCoords) = GetBlocksAndArounds(newMatrix);
 
-        newMatrix = newMatrix.ShiftNorth(newColumnBlockIndices, newRoundCoords);
+        newMatrix = newMatrix.ShiftNorth();
 
         newMatrix = newMatrix.TurnLeft();
 

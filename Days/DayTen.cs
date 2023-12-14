@@ -1,6 +1,3 @@
-using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
-using Microsoft.VisualBasic;
 using Utilities;
 
 namespace Days;
@@ -164,7 +161,7 @@ public static class DayTen
             {
                 tile = input[tileCoord.row][tileCoord.col];
             }
-            catch (System.ArgumentOutOfRangeException e)
+            catch (System.ArgumentOutOfRangeException)
             {
                 // Skip over out of range tiles
                 continue;
@@ -241,6 +238,11 @@ public static class DayTen
         public override string ToString()
         {
             return $"row: {this.row} col: {this.col}";
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -478,7 +480,7 @@ public static class DayTen
                     {
                         tile = input[check.row][check.col];
                     }
-                    catch (ArgumentOutOfRangeException e)
+                    catch (ArgumentOutOfRangeException)
                     {
                         // Skip over out of range tiles
                         hasPathToWall = true;
@@ -527,7 +529,7 @@ public static class DayTen
         {
             nextTile = input[current.row][current.col];
         }
-        catch (ArgumentNullException e)
+        catch (ArgumentNullException)
         {
             // false if next tile is out of bounds
             return false;

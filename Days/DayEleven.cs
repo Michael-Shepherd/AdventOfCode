@@ -1,4 +1,3 @@
-using Microsoft.VisualBasic;
 using Utilities;
 
 namespace Days;
@@ -178,7 +177,7 @@ public static class DayEleven
 
                         newListToCheck.Add(check);
                     }
-                    catch (ArgumentOutOfRangeException e)
+                    catch (ArgumentOutOfRangeException)
                     {
                         continue;
                     }

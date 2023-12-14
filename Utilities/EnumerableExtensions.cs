@@ -27,4 +27,41 @@ public static class EnumerableExtensions
 
         return new[] { list };
     }
+
+    public static List<string> GetDistinctPermutations(this string input)
+    {
+        List<string> result = new List<string>();
+        GetDistinctPermutationsHelper(input.ToCharArray(), 0, result);
+        return result;
+    }
+
+    static void GetDistinctPermutationsHelper(char[] arr, int index, List<string> result)
+    {
+        if (index == arr.Length - 1)
+        {
+            result.Add(new string(arr));
+            return;
+        }
+
+        HashSet<char> swapped = new HashSet<char>();
+
+        for (int i = index; i < arr.Length; i++)
+        {
+            if (!swapped.Contains(arr[i]))
+            {
+                swapped.Add(arr[i]);
+
+                Swap(arr, index, i);
+                GetDistinctPermutationsHelper(arr, index + 1, result);
+                Swap(arr, index, i); // Backtrack
+            }
+        }
+    }
+
+    static void Swap(char[] arr, int i, int j)
+    {
+        char temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
 }
