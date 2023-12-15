@@ -205,6 +205,11 @@ public static class DayTwelve
             resultInt = resultInt * 10 + brokenStringCount;
         }
 
+        if (comboToCheck == 1)
+        {
+            Console.WriteLine(comboToCheck);
+            Console.WriteLine(lineData + " " + brokenStringCount + " " + comboToCheck);
+        }
         isCorrectCombo = resultInt == comboToCheck;
         return isCorrectCombo;
     }

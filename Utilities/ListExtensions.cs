@@ -6,4 +6,9 @@ public static class ListExtensions
     {
         return new string(list.SelectMany(l => l).ToArray());
     }
+
+    public static string Flatten(this string[] list)
+    {
+        return new string(list.SelectMany(l => l).ToArray());
+    }
 }
