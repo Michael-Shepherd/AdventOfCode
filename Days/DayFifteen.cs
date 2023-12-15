@@ -11,7 +11,7 @@ public static class DayFifteen
 
     public static long HandleStepOne()
     {
-        var input = InputReader.Get(".\\input\\day_seven_input.txt");
+        var input = InputReader.Get(".\\input\\fifteen.txt");
         return -1;
     }
 
