@@ -12,33 +12,15 @@ public static class DayTwelve
 
     public static long Handle()
     {
-        var input = InputReader.Get(".\\input\\twelve.txt");
-        var numberCounts = new Dictionary<int, int>();
-
-        foreach (var line in input)
-        {
-            var unknownCount = line.Count(a => a == UNKNOWN);
-            if (numberCounts.TryGetValue(unknownCount, out var count))
-            {
-                numberCounts[unknownCount]++;
-            }
-            else
-            {
-                numberCounts.Add(unknownCount, 1);
-            }
-        }
-
-        foreach (var n in numberCounts)
-        {
-            Console.WriteLine(n.Key + " occurrences: " + n.Value);
-        }
-
         return HandleStepOneDifferently();
     }
 
     public static long HandleStepOneDifferently()
     {
         var input = InputReader.Get(".\\input\\twelve.txt");
+
+        Console.WriteLine(input.Where(line => !line.Contains(UNKNOWN)).Count());
+
         var unknownPermDectionary = new Dictionary<string, List<string>>();
 
         // Parallel.For(10, 18, i =>
@@ -127,6 +109,11 @@ public static class DayTwelve
         var resultNumber = int.Parse(result.Replace(",", ""));
         var unknownIndices = new List<int>();
 
+        if (numberOfUnknowns == 0)
+        {
+            return (new HashSet<string>() { data }, resultNumber, unknownPermDectionary);
+        }
+
         for (int i = 0; i <= numberOfUnknowns; i++)
         {
             var working = new char[i];
@@ -180,6 +167,7 @@ public static class DayTwelve
 
     private static bool DoesLineProduceCorrectCombo(string lineData, long comboToCheck)
     {
+
         bool isCorrectCombo;
         var resultInt = 0;
         var brokenStringCount = 0;
@@ -205,141 +193,7 @@ public static class DayTwelve
             resultInt = resultInt * 10 + brokenStringCount;
         }
 
-        if (comboToCheck == 1)
-        {
-            Console.WriteLine(comboToCheck);
-            Console.WriteLine(lineData + " " + brokenStringCount + " " + comboToCheck);
-        }
         isCorrectCombo = resultInt == comboToCheck;
         return isCorrectCombo;
-    }
-
-
-    public static long HandleStepOne()
-    {
-        var input = InputReader.Get(".\\input\\twelve.txt");
-
-        long fullCount = 0;
-
-        var permutationValueDict = new Dictionary<string, string>();
-
-        Parallel.For(0, input.Length, inputIndex =>
-        {
-            var line = input[inputIndex];
-            var data = line.Split(" ").First();
-            var numbers = line.Split(" ").Last();
-            var brokenExpectedCount = numbers.Split(",").Select(int.Parse).Sum();
-            var existingBroken = data.Where(x => x.Equals(DAMAGED)).Count();
-
-            var questionIndices = new List<int>();
-            for (int i = 0; i < data.Length; i++)
-            {
-                var character = data[i];
-                if (character == UNKNOWN)
-                {
-                    questionIndices.Add(i);
-                }
-            }
-
-            var permutationInserts = new HashSet<string>();
-            for (int i = 0; i < questionIndices.Count() + 1; i++)
-            {
-                var damagedCount = questionIndices.Count() - i;
-                if (damagedCount + existingBroken > brokenExpectedCount)
-                {
-                    continue;
-                }
-
-                var newWord = string.Concat(Enumerable.Repeat(WORKING, i)) + string.Concat(Enumerable.Repeat(DAMAGED, damagedCount));
-
-                foreach (var perm in newWord.Permutations())
-                {
-                    permutationInserts.Add(string.Concat(perm));
-                }
-            }
-
-            long countOfMatching = 0;
-            var dataWord = data.ToList();
-            var permutations = new HashSet<string>();
-            foreach (var perm in permutationInserts)
-            {
-                var newWord = dataWord;
-                for (int i = 0; i < questionIndices.Count(); i++)
-                {
-                    newWord[questionIndices[i]] = perm[i];
-                }
-                var newWordAsString = new string(newWord.ToArray());
-                if (!permutations.TryGetValue(newWordAsString, out var wololo))
-                {
-                    permutations.Add(newWordAsString);
-                    if (permutationValueDict.TryGetValue(newWordAsString, out var combo))
-                    {
-                        if (combo == numbers)
-                        {
-                            countOfMatching++;
-                        }
-                    }
-                    else
-                    {
-                        var newCombo = GetCombinationSummary(newWordAsString);
-                        lock (permutationValueDict)
-                        {
-                            permutationValueDict.Add(newWordAsString, newCombo);
-                        }
-                        if (newCombo == numbers)
-                        {
-                            countOfMatching++;
-                        }
-                    }
-                }
-            }
-
-            Console.WriteLine("Word: " + data + "Count: " + countOfMatching);
-            Console.WriteLine("******");
-
-            fullCount += countOfMatching;
-        });
-        return fullCount;
-    }
-
-    private static string GetCombinationSummary(string lineData)
-    {
-        var previousChar = lineData.First();
-        var currentCharCount = 0;
-        var result = "";
-        foreach (var character in lineData)
-        {
-            if (character == previousChar)
-            {
-                currentCharCount++;
-            }
-            else
-            {
-                if (previousChar == DAMAGED)
-                {
-                    result += currentCharCount + ",";
-                }
-                currentCharCount = 1;
-            }
-
-            previousChar = character;
-        }
-
-        if (previousChar == WORKING)
-        {
-            result = result.Remove(result.Length - 1);
-        }
-        else
-        {
-            result += currentCharCount;
-        }
-
-        return result;
-    }
-
-    public static long HandleStepTwo()
-    {
-        var input = InputReader.Get(".\\input\\day_seven_input.txt");
-        return -1;
     }
 }

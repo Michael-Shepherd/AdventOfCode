@@ -94,7 +94,9 @@ public static class DayFifteen
         return count;
     }
 
+#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
     private static void VisualiseBoxes<T, T1, T2>(Dictionary<T, List<(T1, T2)>> boxes)
+#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
     {
         foreach (var box in boxes)
         {
