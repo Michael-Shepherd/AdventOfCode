@@ -10,13 +10,43 @@ public static class DaySixteen
         return HandleStepOne();
     }
 
-    public static long HandleStepOne()
+    private static long HandleStepOne()
+    {
+        var input = InputReader.Get(".\\input\\sixteen.txt");
+        var inputMatrix = input.Select(a => a.ToList()).ToList();
+
+        var startCharacter = inputMatrix[0][0];
+        var startDirection = startCharacter == '.' || startCharacter == '-' ? Direction.RIGHT : startCharacter == '/' ? Direction.UP : Direction.DOWN;
+        var starPoint = (0, 0, startDirection);
+
+        var tilesToCheck = new List<(int, int, Direction)>() { starPoint };
+        var touched = new HashSet<(int, int, Direction)>();
+        while (tilesToCheck.Any())
+        {
+            var newTilesToCheck = new List<(int, int, Direction)>();
+            foreach (var tile in tilesToCheck)
+            {
+                if (touched.Contains(tile))
+                {
+                    continue;
+                }
+                touched.Add(tile);
+                newTilesToCheck.AddRange(GetNextDirections(inputMatrix, tile));
+            }
+            tilesToCheck = newTilesToCheck;
+        }
+
+        var distinctLocations = touched.Select(x => (x.Item1, x.Item2)).ToHashSet();
+        return distinctLocations.Count;
+    }
+
+    private static long HandleStepTwo()
     {
         var input = InputReader.Get(".\\input\\sixteen.txt");
         var inputMatrix = input.Select(a => a.ToList()).ToList();
 
         var maxEnergised = 0;
-        for (int bottom = 0; bottom < 2; bottom++)
+        for (int bottom = 0; bottom < 4; bottom++)
         {
             var rowIndex = bottom == 1 ? input.Length - 1 : 0;
 
@@ -25,7 +55,7 @@ public static class DaySixteen
                 var tilesToCheck = new List<(int, int, Direction)>() { };
 
                 // TOP
-                if (rowIndex == 0)
+                if (bottom == 0)
                 {
                     if (inputMatrix[rowIndex][i] == '|')
                     {
@@ -50,7 +80,7 @@ public static class DaySixteen
                     }
                 }
                 // BOTTOM
-                else
+                else if (bottom == 1)
                 {
                     if (inputMatrix[rowIndex][i] == '|')
                     {
@@ -74,8 +104,56 @@ public static class DaySixteen
                         tilesToCheck.Add((rowIndex, i, Direction.RIGHT));
                     }
                 }
-
-                Console.WriteLine($"{tilesToCheck.Count} {0} {0}");
+                // LEFT
+                else if (bottom == 2)
+                {
+                    if (inputMatrix[i][0] == '|')
+                    {
+                        tilesToCheck.Add((i, 0, Direction.UP));
+                        tilesToCheck.Add((i, 0, Direction.DOWN));
+                    }
+                    if (inputMatrix[i][0] == '-')
+                    {
+                        tilesToCheck.Add((i, 0, Direction.RIGHT));
+                    }
+                    if (inputMatrix[i][0] == '.')
+                    {
+                        tilesToCheck.Add((i, 0, Direction.RIGHT));
+                    }
+                    if (inputMatrix[i][0] == '\\')
+                    {
+                        tilesToCheck.Add((i, 0, Direction.DOWN));
+                    }
+                    if (inputMatrix[i][0] == '/')
+                    {
+                        tilesToCheck.Add((i, 0, Direction.UP));
+                    }
+                }
+                // RIGHT
+                else if (bottom == 3)
+                {
+                    if (inputMatrix[i][input[0].Length - 1] == '|')
+                    {
+                        tilesToCheck.Add((i, input[0].Length - 1, Direction.UP));
+                        tilesToCheck.Add((i, input[0].Length - 1, Direction.DOWN));
+                    }
+                    if (inputMatrix[i][input[0].Length - 1] == '-')
+                    {
+                        tilesToCheck.Add((i, input[0].Length - 1, Direction.LEFT));
+                    }
+                    if (inputMatrix[i][input[0].Length - 1] == '.')
+                    {
+                        tilesToCheck.Add((i, input[0].Length - 1, Direction.LEFT));
+                    }
+                    if (inputMatrix[i][input[0].Length - 1] == '\\')
+                    {
+                        tilesToCheck.Add((i, input[0].Length - 1, Direction.UP));
+                    }
+                    if (inputMatrix[i][input[0].Length - 1] == '/')
+                    {
+                        tilesToCheck.Add((i, input[0].Length - 1, Direction.DOWN));
+                    }
+                }
 
                 var touched = new HashSet<(int, int, Direction)>();
                 while (tilesToCheck.Any())
@@ -93,51 +171,10 @@ public static class DaySixteen
                     tilesToCheck = newTilesToCheck;
                 }
 
-                // visualiseMatrix(inputMatrix, touched);
-
                 var distinctLocations = touched.Select(x => (x.Item1, x.Item2)).ToHashSet();
                 maxEnergised = maxEnergised < distinctLocations.Count ? distinctLocations.Count : maxEnergised;
-                if (distinctLocations.Count == 6665)
-                {
-                    visualiseMatrix(inputMatrix, touched);
-                }
             }
         }
-
-        var cornerStarts = new List<(int, int, Direction)>()
-        {
-            (0, 0, Direction.DOWN),
-            (0, input[0].Length -1, Direction.LEFT),
-            (input.Length - 1, 0, Direction.RIGHT),
-            (input.Length - 1, input[0].Length -1, Direction.LEFT),
-        };
-
-        foreach (var start in cornerStarts)
-        {
-            var tilesToCheck = new List<(int, int, Direction)>() { start };
-            var touched = new HashSet<(int, int, Direction)>();
-            while (tilesToCheck.Any())
-            {
-                var newTilesToCheck = new List<(int, int, Direction)>();
-                foreach (var tile in tilesToCheck)
-                {
-                    if (touched.Contains(tile))
-                    {
-                        continue;
-                    }
-                    touched.Add(tile);
-                    newTilesToCheck.AddRange(GetNextDirections(inputMatrix, tile));
-                }
-                tilesToCheck = newTilesToCheck;
-            }
-
-            // visualiseMatrix(inputMatrix, touched);
-
-            var distinctLocations = touched.Select(x => (x.Item1, x.Item2)).ToHashSet();
-            maxEnergised = maxEnergised < distinctLocations.Count ? distinctLocations.Count : maxEnergised;
-            // visualiseMatrix(inputMatrix, touched);
-        }
-
         return maxEnergised;
     }
 
@@ -289,12 +326,6 @@ public static class DaySixteen
             }
             Console.WriteLine();
         }
-    }
-
-    public static long HandleStepTwo()
-    {
-        var input = InputReader.Get(".\\input\\day_seven_input.txt");
-        return -1;
     }
 }
 
