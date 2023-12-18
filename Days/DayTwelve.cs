@@ -23,20 +23,6 @@ public static class DayTwelve
 
         var unknownPermDectionary = new Dictionary<string, List<string>>();
 
-        // Parallel.For(10, 18, i =>
-        // {
-        //     Console.WriteLine("starting " + i);
-        //     var dict = GeneratePreCacheData(i);
-        //     foreach (var perm in dict)
-        //     {
-        //         lock (unknownPermDectionary)
-        //         {
-        //             unknownPermDectionary.TryAdd(perm.Key, perm.Value);
-        //         }
-        //     }
-        //     Console.WriteLine("done " + i);
-        // });
-
         long totalCount = 0;
         Parallel.For(0, input.Length, i =>
         {
@@ -66,35 +52,6 @@ public static class DayTwelve
         });
 
         return totalCount;
-    }
-
-    private static Dictionary<string, IEnumerable<IEnumerable<char>>> GeneratePreCacheData(int numberOfQuestionMarks)
-    {
-        var unknownPermutations = new HashSet<string>();
-        var unknownPermDectionary = new Dictionary<string, IEnumerable<IEnumerable<char>>>();
-
-        for (int i = 0; i <= numberOfQuestionMarks; i++)
-        {
-            var working = new char[i];
-            for (var j = 0; j < working.Length; j++)
-            {
-                working[j] = WORKING;
-            }
-            var damaged = new char[numberOfQuestionMarks - i];
-            for (var j = 0; j < damaged.Length; j++)
-            {
-                damaged[j] = DAMAGED;
-            }
-            unknownPermutations.Add(string.Concat(working) + string.Concat(damaged));
-        }
-
-        foreach (var perm in unknownPermutations)
-        {
-            var permPerms = perm.Permutations();
-            unknownPermDectionary.Add(perm, permPerms);
-        }
-
-        return unknownPermDectionary;
     }
 
     // expecting #....#... 1,1
@@ -129,7 +86,7 @@ public static class DayTwelve
             unknownPermutations.Add(string.Concat(working) + string.Concat(damaged));
         }
 
-        var checkedPermWords = new HashSet<string>();
+        // var checkedPermWords = new HashSet<string>();
         foreach (var perm in unknownPermutations)
         {
             var permPerms = perm.GetDistinctPermutations();
@@ -146,11 +103,11 @@ public static class DayTwelve
             {
                 var permWord = newPerm;
 
-                if (checkedPermWords.TryGetValue(permWord, out var _))
-                {
-                    continue;
-                }
-                checkedPermWords.Add(permWord);
+                // if (checkedPermWords.TryGetValue(permWord, out var _))
+                // {
+                //     continue;
+                // }
+                // checkedPermWords.Add(permWord);
                 var newWord = data;
 
                 for (int i = 0; i < numberOfUnknowns; i++)
