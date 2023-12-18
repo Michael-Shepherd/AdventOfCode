@@ -1,5 +1,6 @@
 using Utilities;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Days;
 
@@ -13,6 +14,7 @@ public static class DayEighteen
 
     public static long HandleStepTwo()
     {
+        var stopwatch = Stopwatch.StartNew();
         var input = InputReader.Get(".\\input\\eighteen.txt");
         var instructions = new List<(Direction, int, string)>();
         var Coords = new Dictionary<(int, int), string>();
@@ -23,9 +25,13 @@ public static class DayEighteen
         var highestRow = 0;
         foreach (var line in input)
         {
+            // var value = line.Split(" ").Last().Replace("(", "").Replace(")", "");
+            // var distance = Convert.ToInt32(value[1..6], 16);
+            // var direction = value.Last().MapToDirection();
+
+            var direction = line.Split(" ")[0][0].MapToDirection();
+            var distance = int.Parse(line.Split(" ")[1]);
             var value = line.Split(" ").Last().Replace("(", "").Replace(")", "");
-            var distance = Convert.ToInt32(value[0..5], 16);
-            var direction = value.Last().MapToDirection();
 
             Console.WriteLine($"{value} {direction} {distance}");
 
@@ -70,58 +76,52 @@ public static class DayEighteen
                 highestCol = currentSpot.Item2 > highestCol ? currentSpot.Item2 : highestCol;
             }
         }
+        Console.WriteLine("Done Parsing. Time elapsed: {0}", stopwatch.Elapsed);
 
-        var actualMatrix = new List<List<string>>();
-        for (int i = 0; i <= highestRow - lowestRow; i++)
-        {
-            var newlist = new List<string>();
-            for (int j = 0; j <= highestCol - lowestCol; j++)
-            {
-                newlist.Add(EMPTY);
-            }
-            actualMatrix.Add(newlist);
-        }
 
-        var listOfCoords = new List<(int, int)>();
-        foreach (var coord in Coords)
-        {
-            actualMatrix[coord.Key.Item1 - lowestRow][coord.Key.Item2 - lowestCol] = coord.Value;
-            listOfCoords.Add((coord.Key.Item1 - lowestRow, coord.Key.Item2 - lowestCol));
-        }
+        // var actualMatrix = new string[highestRow - lowestRow, highestCol - lowestCol];
+        //     for (int j = 0; j <= highestCol - lowestCol; j++)
+        //     {
+        //         newlist.Add(EMPTY);
+        //     }
+        //     actualMatrix.Add(newlist);
+        // }
 
-        var touched = new HashSet<(int, int)>();
-        var inside = new List<(int, int)>();
-        var outside = new List<(int, int)>();
-        long countOfSpace = listOfCoords.Count;
-        for (int i = 0; i <= highestRow - lowestRow; i++)
-        {
-            for (int j = 0; j <= highestCol - lowestCol; j++)
-            {
-                if (!touched.Contains((i, j)))
-                {
-                    (var canTouchWall, var groupOfNodes) = hasPathToWall(actualMatrix, (i, j), touched);
-                    foreach (var t in groupOfNodes)
-                    {
-                        touched.Add(t);
-                    }
 
-                    if (!canTouchWall)
-                    {
-                        countOfSpace += groupOfNodes.Count;
-                        inside.AddRange(groupOfNodes);
-                    }
-                    else
-                    {
-                        outside.AddRange(groupOfNodes);
-                    }
-                }
-            }
-        }
+        // var touched = new HashSet<(int, int)>();
+        // var inside = new List<(int, int)>();
+        // var outside = new List<(int, int)>();
+        // long countOfSpace = Coords.Count;
+        // for (int i = 0; i <= highestRow - lowestRow; i++)
+        // {
 
-        visualiseCoords(actualMatrix, outside, inside);
+        //     for (int j = 0; j <= highestCol - lowestCol; j++)
+        //     {
+        //         if (!touched.Contains((i, j)))
+        //         {
+        //             (var canTouchWall, var groupOfNodes) = hasPathToWall(Coords, (i, j), touched, highestCol, highestRow, lowestRow, lowestCol);
+        //             foreach (var t in groupOfNodes)
+        //             {
+        //                 Console.WriteLine("Done Group Starting at {1}. Time elapsed: {0}", stopwatch.Elapsed, (i, j));
+
+        //                 touched.Add(t);
+        //             }
+
+        //             if (!canTouchWall)
+        //             {
+        //                 countOfSpace += groupOfNodes.Count;
+        //             }
+        //         }
+
+        //     }
+        //     Console.WriteLine("Done Row {1}. Time elapsed: {0}", stopwatch.Elapsed, i);
+        // }
+
+        // visualiseCoords(actualMatrix, outside, inside);
         // Console.WriteLine(string.Join("\n", Coords.Keys));
-        return countOfSpace;
+        return (long)Coords.Keys.ToList().PolygonArea();
     }
+
     public static long HandleStepOne()
     {
         var input = InputReader.Get(".\\input\\eighteen.txt");
@@ -201,6 +201,7 @@ public static class DayEighteen
         var inside = new List<(int, int)>();
         var outside = new List<(int, int)>();
         long countOfSpace = listOfCoords.Count;
+        Console.WriteLine(listOfCoords.Count);
         for (int i = 0; i <= highestRow - lowestRow; i++)
         {
             for (int j = 0; j <= highestCol - lowestCol; j++)
@@ -232,8 +233,75 @@ public static class DayEighteen
 
     }
 
+
+    private static (bool, HashSet<(int, int)>) hasPathToWall(Dictionary<(int, int), string> inputMatrix, (int, int) startingCoords, HashSet<(int, int)> touched, int maxCol, int maxRow, int minRow, int minCol)
+    {
+        // Console.WriteLine(startingCoords);
+        var nodesToCheckNeighbours = new HashSet<(int, int)>() { startingCoords };
+        var currentNodes = new HashSet<(int, int)>();
+        var hasPathToWall = false;
+
+        while (nodesToCheckNeighbours.Any())
+        {
+            var newNodesToCheckNeighbours = new HashSet<(int, int)>();
+            foreach (var node in nodesToCheckNeighbours)
+            {
+                inputMatrix.TryGetValue((node.Item1, node.Item2), out var nodeValue);
+                if (!string.IsNullOrEmpty(nodeValue))
+                {
+                    touched.Add(node);
+                    continue;
+                }
+
+                if (touched.Contains(node))
+                {
+                    continue;
+                }
+
+                var up = (node.Item1 - 1, node.Item2);
+                var down = (node.Item1 + 1, node.Item2);
+                var left = (node.Item1, node.Item2 - 1);
+                var right = (node.Item1, node.Item2 + 1);
+                var validChecks = new List<(int, int)>() { up, down, left, right };
+
+                foreach (var check in validChecks)
+                {
+                    if (touched.Contains(check))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        if (check.Item1 > maxRow || check.Item1 < minRow || check.Item2 > maxCol || check.Item2 < minCol)
+                        {
+                            throw new ArgumentOutOfRangeException();
+                        }
+                        inputMatrix.TryGetValue((check.Item1, check.Item2), out var neighbourValue);
+
+                        if (string.IsNullOrEmpty(neighbourValue))
+                        {
+                            newNodesToCheckNeighbours.Add(check);
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        hasPathToWall = true;
+                    }
+                }
+
+                currentNodes.Add(node);
+                touched.Add(node);
+            }
+            nodesToCheckNeighbours = newNodesToCheckNeighbours;
+        }
+        return (hasPathToWall, currentNodes);
+    }
+
+
     private static (bool, HashSet<(int, int)>) hasPathToWall(List<List<string>> inputMatrix, (int, int) startingCoords, HashSet<(int, int)> touched)
     {
+        Console.WriteLine(startingCoords);
         var nodesToCheckNeighbours = new HashSet<(int, int)>() { startingCoords };
         var currentNodes = new HashSet<(int, int)>();
         var hasPathToWall = false;
