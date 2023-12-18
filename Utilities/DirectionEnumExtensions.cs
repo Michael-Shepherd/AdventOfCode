@@ -20,4 +20,29 @@ public static class DirectionEnumExtensions
                 return PolarDirection.NONE;
         }
     }
+
+    public static Direction MapToDirection(this char letter)
+    {
+        switch (letter)
+        {
+            case 'U':
+                return Direction.UP;
+            case 'D':
+                return Direction.DOWN;
+            case 'L':
+                return Direction.LEFT;
+            case 'R':
+                return Direction.RIGHT;
+            case '0':
+                return Direction.RIGHT;
+            case '1':
+                return Direction.DOWN;
+            case '2':
+                return Direction.LEFT;
+            case '3':
+                return Direction.UP;
+            default:
+                return Direction.NONE;
+        }
+    }
 }

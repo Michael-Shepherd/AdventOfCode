@@ -21,11 +21,11 @@ public static class DaySeventeen
             {
                 if (row == 0 && col == 0)
                 {
-                    unvisitedSet.Add((row, col), new NoReverseDNode() { CoOrds = (row, col), distance = 0, Value = (int)char.GetNumericValue(inputMatrix[row][col]), LastThreeDirections = new List<PolarDirection> { } });
+                    unvisitedSet.Add((row, col), new NoReverseDNode() { CoOrds = (row, col), Distance = 0, Length = (int)char.GetNumericValue(inputMatrix[row][col]), LastThreeDirections = new List<PolarDirection> { } });
                 }
                 else
                 {
-                    unvisitedSet.Add((row, col), new NoReverseDNode() { CoOrds = (row, col), distance = int.MaxValue, Value = (int)char.GetNumericValue(inputMatrix[row][col]) });
+                    unvisitedSet.Add((row, col), new NoReverseDNode() { CoOrds = (row, col), Distance = int.MaxValue, Length = (int)char.GetNumericValue(inputMatrix[row][col]) });
                 }
             }
         }
@@ -49,7 +49,31 @@ public static class DaySeventeen
                         break;
                     }
                 }
-                Console.Write(inputMatrix[(row, col)].Value + " ");
+                Console.Write(inputMatrix[(row, col)].Length + " ");
+
+                Console.BackgroundColor = ConsoleColor.Black;
+            }
+            Console.WriteLine();
+        }
+        Console.WriteLine("***********************");
+    }
+    private static void visualiseDistances(Dictionary<(int, int), NoReverseDNode> inputMatrix, List<DNode> touched)
+    {
+        Console.WriteLine("***********************");
+        // Console.WriteLine(string.Join("\n", touched));
+        for (int row = 0; row < 13; row++)
+        {
+            for (int col = 0; col < 13; col++)
+            {
+                foreach (var t in touched)
+                {
+                    if (t.CoOrds == (row, col))
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        break;
+                    }
+                }
+                Console.Write(inputMatrix[(row, col)].Distance + "\t");
 
                 Console.BackgroundColor = ConsoleColor.Black;
             }
@@ -81,7 +105,7 @@ public static class DaySeventeen
             {
                 var existingNeighbour = unvisitedNodes[neighbour.CoOrds];
 
-                if (existingNeighbour.distance < neighbour.distance)
+                if (existingNeighbour.Distance < neighbour.Distance)
                 {
                     unvisitedNodes[neighbour.CoOrds] = neighbour;
                 }
@@ -98,7 +122,6 @@ public static class DaySeventeen
                 //     Console.WriteLine(node.CoOrds + " " + node.distance + " " + node.Value);
                 // }
 
-                Console.WriteLine(string.Join("\n", unvisitedNodesAsAList));
                 break;
             }
 
@@ -106,13 +129,14 @@ public static class DaySeventeen
             {
                 // Could optimise this for smallest tentative distance if needed
                 unvisitedNodesAsAList = unvisitedNodes.Select(u => u.Value).ToList();
-                unvisitedNodesAsAList.Sort((p, q) => p.distance.CompareTo(q.distance));
+                unvisitedNodesAsAList.Sort((p, q) => p.Distance.CompareTo(q.Distance));
                 currentNode = unvisitedNodesAsAList.First();
+                Console.WriteLine(string.Join("\n", unvisitedNodesAsAList));
             }
 
 
             // Smallest Tentative Distance is infinity, break
-            if (currentNode.distance == int.MaxValue)
+            if (currentNode.Distance == int.MaxValue)
             {
                 Console.WriteLine("All infinity");
                 break;
@@ -120,9 +144,10 @@ public static class DaySeventeen
         }
 
         visualiseWeights(keepItSecret, destinationNode.AllParents);
+        visualiseDistances(visitedNodes, destinationNode.AllParents);
 
 
-        return destinationNode?.distance ?? -1;
+        return destinationNode?.Distance ?? -1;
     }
 
     private static List<NoReverseDNode> GetUnvistedNeighbours(this NoReverseDNode currentNode, Dictionary<(int, int), NoReverseDNode> unvisitedNodes)
@@ -156,11 +181,6 @@ public static class DaySeventeen
         {
             Console.WriteLine("Dafaq");
         }
-
-        Console.WriteLine();
-        Console.WriteLine(string.Join(" ", currentNode.LastThreeDirections));
-        Console.WriteLine(string.Join(" ", validDirections));
-        Console.WriteLine();
 
         var unvisitedValidNeighbours = new List<NoReverseDNode>();
         foreach (var direction in validDirections)
@@ -200,7 +220,7 @@ public static class DaySeventeen
                 neighbour.Previous = currentNode;
                 neighbour.AllParents = currentNode.AllParents.Select(s => s).ToList();
                 neighbour.AllParents.Add(currentNode);
-                neighbour.distance = currentNode.distance + neighbour.Value;
+                neighbour.Distance = currentNode.Distance + neighbour.Length;
                 unvisitedValidNeighbours.Add(neighbour);
             }
         }
@@ -223,13 +243,13 @@ class NoReverseDNode : DNode
 
     public override string ToString()
     {
-        return $"COords: {CoOrds} Distance: {distance}  {string.Join(" ", LastThreeDirections)}";
+        return $"COords: {CoOrds} Length: {Length} Distance: {Distance}  {string.Join(" ", LastThreeDirections)}";
     }
 }
 
 class DNode
 {
     public (int, int) CoOrds { get; set; }
-    public int Value { get; set; }
-    public int distance { get; set; }
+    public int Length { get; set; }
+    public int Distance { get; set; }
 }
