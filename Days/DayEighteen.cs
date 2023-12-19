@@ -17,7 +17,7 @@ public static class DayEighteen
         var stopwatch = Stopwatch.StartNew();
         var input = InputReader.Get(".\\input\\eighteen.txt");
         var instructions = new List<(Direction, int, string)>();
-        var Coords = new Dictionary<(int, int), string>();
+        var Coords = new Dictionary<(long, long), string>();
         var currentSpot = (0, 0, EMPTY);
         var lowestRow = 0;
         var lowestCol = 0;
@@ -25,13 +25,13 @@ public static class DayEighteen
         var highestRow = 0;
         foreach (var line in input)
         {
-            // var value = line.Split(" ").Last().Replace("(", "").Replace(")", "");
-            // var distance = Convert.ToInt32(value[1..6], 16);
-            // var direction = value.Last().MapToDirection();
-
-            var direction = line.Split(" ")[0][0].MapToDirection();
-            var distance = int.Parse(line.Split(" ")[1]);
             var value = line.Split(" ").Last().Replace("(", "").Replace(")", "");
+            var distance = Convert.ToInt32(value[1..6], 16);
+            var direction = value.Last().MapToDirection();
+
+            // var direction = line.Split(" ")[0][0].MapToDirection();
+            // var distance = int.Parse(line.Split(" ")[1]);
+            // var value = line.Split(" ").Last().Replace("(", "").Replace(")", "");
 
             Console.WriteLine($"{value} {direction} {distance}");
 
@@ -119,7 +119,10 @@ public static class DayEighteen
 
         // visualiseCoords(actualMatrix, outside, inside);
         // Console.WriteLine(string.Join("\n", Coords.Keys));
-        return (long)Coords.Keys.ToList().PolygonArea();
+        var area = Coords.Keys.ToList().TraverseAreaCalc();
+        Console.WriteLine(area);
+
+        return area + 1;
     }
 
     public static long HandleStepOne()

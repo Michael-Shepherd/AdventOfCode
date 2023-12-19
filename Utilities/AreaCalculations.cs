@@ -40,4 +40,20 @@ public static class AreaCalculations
         // Return absolute value
         return Math.Abs(area / 2.0);
     }
+
+    public static long TraverseAreaCalc(this List<(long y, long x)> points)
+    {
+        var solids = 0L;
+        var dashes = 0L;
+        var border = 0L;
+        for (int i = 0; i < points.Count - 1; i++)
+        {
+            solids += (long)points[i].x * points[i + 1].y;
+            dashes += (long)points[i].y * points[i + 1].x;
+
+            border += points[i].ManhattanDistance(points[i + 1]);
+        }
+
+        return (Math.Abs(solids - dashes) + border) / 2 + 1;
+    }
 }
