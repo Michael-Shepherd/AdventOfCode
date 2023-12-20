@@ -94,7 +94,6 @@ public static class DaySeventeen
 
         var visitedNodes = new Dictionary<(int, int), NoReverseDNode>();
         var currentNode = unvisitedNodes[(0, 0)];
-        var isComplete = false;
         var unvisitedNodesAsAList = unvisitedNodes.Select(u => u.Value).ToList();
         var destinationNode = unvisitedNodes[destination];
 
@@ -148,7 +147,7 @@ public static class DaySeventeen
             }
         }
 
-        visualiseWeights(keepItSecret, destinationNode.AllParents);
+        visualiseWeights(keepItSecret, destinationNode?.AllParents ?? new List<DNode>());
         // visualiseDistances(visitedNodes, destinationNode.AllParents);
 
 
