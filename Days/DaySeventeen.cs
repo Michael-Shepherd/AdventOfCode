@@ -73,7 +73,14 @@ public static class DaySeventeen
                         break;
                     }
                 }
-                Console.Write(inputMatrix[(row, col)].Distance + "\t");
+                try
+                {
+                    Console.Write(inputMatrix[(row, col)].Distance + "\t");
+                }
+                catch
+                {
+                    Console.Write("??" + "\t");
+                }
 
                 Console.BackgroundColor = ConsoleColor.Black;
             }
@@ -126,12 +133,12 @@ public static class DaySeventeen
                 unvisitedNodesAsAList.Sort((p, q) => p.Distance.CompareTo(q.Distance));
                 foreach (var node in unvisitedNodesAsAList)
                 {
-                    if (node.LastThreeDirections.Count() == 3 &&
-                    node.LastThreeDirections.Distinct().Count() == 1 &&
-                    node.LastThreeDirections.First() == currentNode.LastThreeDirections.Last())
-                    {
-                        continue;
-                    }
+                    // if (node.LastThreeDirections.Count() == 3 &&
+                    // node.LastThreeDirections.Distinct().Count() == 1 &&
+                    // node.LastThreeDirections.First() == currentNode.LastThreeDirections.Last())
+                    // {
+                    //     continue;
+                    // }
                     currentNode = unvisitedNodesAsAList.First();
                     break;
                 }
@@ -148,7 +155,7 @@ public static class DaySeventeen
         }
 
         visualiseWeights(keepItSecret, destinationNode?.AllParents ?? new List<DNode>());
-        // visualiseDistances(visitedNodes, destinationNode.AllParents);
+        visualiseDistances(visitedNodes, destinationNode.AllParents);
 
 
         return destinationNode?.Distance ?? -1;
@@ -212,6 +219,7 @@ public static class DaySeventeen
             if (unvisitedNodes.TryGetValue(newCoOrds, out var neighbour))
             {
                 var newNeighbour = neighbour.Clone();
+
                 var newDirections = currentNode.LastThreeDirections.Select(s => s).ToList();
 
                 if (newDirections.Count == 3)
@@ -222,10 +230,10 @@ public static class DaySeventeen
                 newNeighbour.LastThreeDirections = newDirections;
                 newNeighbour.Previous = currentNode;
                 newNeighbour.AllParents = currentNode.AllParents.Select(s => s).ToList();
-                newNeighbour.AllParents.Add(currentNode);
 
                 if (currentNode.Distance + newNeighbour.Length < newNeighbour.Distance)
                 {
+                    newNeighbour.AllParents.Add(currentNode);
                     newNeighbour.Distance = currentNode.Distance + neighbour.Length;
                     unvisitedValidNeighbours.Add(newNeighbour);
                 }
