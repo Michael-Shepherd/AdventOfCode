@@ -35,7 +35,7 @@ public static class DayTwentyOne
             startingRows = i;
         }
 
-        return WalkAroundTwo(blocks, startCoord, 5000, startingRows, startingCols);
+        return WalkAroundTwo(blocks, startCoord, 1, startingRows, startingCols);
     }
 
 
@@ -59,7 +59,7 @@ public static class DayTwentyOne
 
                 foreach (var spot in coordsToCheck)
                 {
-                    (var isBlocked, blocks, (rowsTop, rowsBottom, colsLeft, colsRight)) = IsBlockBlocked(blocks, spot, rowsTop, rowsBottom, colsLeft, colsRight);
+                    (var isBlocked, _, _) = IsBlockBlocked(blocks, spot, rowsTop, rowsBottom, colsLeft, colsRight);
                     if (!isBlocked)
                     {
                         nexStartingSpots.Add(spot);
@@ -71,74 +71,158 @@ public static class DayTwentyOne
         return startingSpots.Count();
     }
 
+    // TODO: Use maths
     public static (bool, HashSet<(int, int)>, (int rowsTop, int rowsBottom, int colsLeft, int colsRight)) IsBlockBlocked(HashSet<(int, int)> blocks, (int, int) coord, int rowsTop, int rowsBottom, int colsLeft, int colsRight)
     {
-        var newBlocks = new HashSet<(int, int)>();
-        if (coord.Item1 > rowsBottom)
+        int i = 1;
+        var adjustedCoord = coord;
+        var rowShift = (1 + rowsBottom) - rowsTop;
+        var colShift = (colsRight + 1) - colsLeft;
+        while (true)
         {
-            // Console.WriteLine("down " + (rowsTop, rowsBottom, colsLeft, colsRight));
-            // expand down
-            var shift = (rowsBottom + 1) - rowsTop;
-            rowsBottom = rowsBottom + shift;
-            foreach (var block in blocks)
+            if (adjustedCoord.Item1 >= rowsTop &&
+            adjustedCoord.Item1 <= rowsBottom &&
+            adjustedCoord.Item2 >= colsLeft &&
+            adjustedCoord.Item2 <= colsRight)
             {
-                newBlocks.Add((block.Item1 + shift, block.Item2));
+                // check blocks
+                if (blocks.Contains(adjustedCoord))
+                {
+                    return (true, blocks, (rowsTop, rowsBottom, colsLeft, colsRight));
+                }
+
+                return (false, blocks, (rowsTop, rowsBottom, colsLeft, colsRight));
             }
-        }
-        else if (coord.Item1 < rowsTop)
-        {
-            // Console.WriteLine("Up " + (rowsTop, rowsBottom, colsLeft, colsRight));
-            var shift = (rowsBottom + 1) - rowsTop;
-            // expand up
-            rowsTop = rowsTop - shift;
-            foreach (var block in blocks)
+            else
             {
-                newBlocks.Add((block.Item1 - shift, block.Item2));
             }
-        }
 
-        foreach (var b in newBlocks)
-        {
-            blocks.Add(b);
-        }
-
-        newBlocks = new HashSet<(int, int)>();
-        if (coord.Item2 > colsRight)
-        {
-            // Console.WriteLine("Right " + (rowsTop, rowsBottom, colsLeft, colsRight));
-            // expand right
-            var shift = (colsRight + 1) - colsLeft;
-            colsRight = colsRight + shift;
-            foreach (var block in blocks)
+            // UP RIGHT
+            if (adjustedCoord.Item1 < rowsTop * i && adjustedCoord.Item2 > colsRight * i)
             {
-                newBlocks.Add((block.Item1, block.Item2 + shift));
+                adjustedCoord = (adjustedCoord.Item1 + (i * rowShift), adjustedCoord.Item2 - (i * colShift));
             }
-        }
-        else if (coord.Item1 < colsLeft)
-        {
-            // Console.WriteLine("left " + (rowsTop, rowsBottom, colsLeft, colsRight));
-            // expand left
-            var shift = (colsRight + 1) - colsLeft;
-            colsLeft = colsLeft - shift;
-
-            foreach (var block in blocks)
+            // DOWN RIGHT
+            else if (adjustedCoord.Item1 > rowsBottom * i && adjustedCoord.Item2 > colsRight * i)
             {
-                newBlocks.Add((block.Item1, block.Item2 - shift));
+                adjustedCoord = (adjustedCoord.Item1 - (i * rowShift), adjustedCoord.Item2 - (i * colShift));
             }
-        }
-        foreach (var b in newBlocks)
-        {
-            blocks.Add(b);
+            // DOWN LEFT
+            else if (adjustedCoord.Item1 > rowsBottom * i && adjustedCoord.Item2 < colsLeft * i)
+            {
+                adjustedCoord = (adjustedCoord.Item1 - (i * rowShift), adjustedCoord.Item2 + (i * colShift));
+
+            }
+            // UP LEFT
+            else if (adjustedCoord.Item1 < rowsTop * i && adjustedCoord.Item2 < colsLeft * i)
+            {
+                adjustedCoord = (adjustedCoord.Item1 - (i * rowShift), adjustedCoord.Item2 + (i * colShift));
+
+            }
+
+            // UP
+            else if (adjustedCoord.Item1 < rowsTop * i)
+            {
+                adjustedCoord = (adjustedCoord.Item1 - (i * rowShift), adjustedCoord.Item2);
+
+            }
+            // DOWN
+            else if (adjustedCoord.Item1 > rowsBottom * i)
+            {
+                adjustedCoord = (adjustedCoord.Item1 + (i * rowShift), adjustedCoord.Item2);
+
+            }
+            // LEFT
+            else if (adjustedCoord.Item2 < colsLeft * i)
+            {
+                adjustedCoord = (adjustedCoord.Item1, adjustedCoord.Item2 + (i * colShift));
+
+            }
+            // RIGHT
+            else if (adjustedCoord.Item2 > colsRight * i)
+            {
+                adjustedCoord = (adjustedCoord.Item1, adjustedCoord.Item2 - (i * colShift));
+            }
+            else
+            {
+                Console.WriteLine("returned");
+                if (blocks.Contains(adjustedCoord))
+                {
+                    return (true, blocks, (rowsTop, rowsBottom, colsLeft, colsRight));
+                }
+
+                return (false, blocks, (rowsTop, rowsBottom, colsLeft, colsRight));
+            }
+            i++;
         }
 
-        // Console.WriteLine(string.Join(" ", blocks));
 
-        if (blocks.Contains(coord))
-        {
-            return (true, blocks, (rowsTop, rowsBottom, colsLeft, colsRight));
-        }
+        // var newBlocks = new HashSet<(int, int)>();
+        // if (coord.Item1 > rowsBottom)
+        // {
+        //     // Console.WriteLine("down " + (rowsTop, rowsBottom, colsLeft, colsRight));
+        //     // expand down
+        //     var shift = (rowsBottom + 1) - rowsTop;
+        //     rowsBottom = rowsBottom + shift;
+        //     foreach (var block in blocks)
+        //     {
+        //         newBlocks.Add((block.Item1 + shift, block.Item2));
+        //     }
+        // }
+        // else if (coord.Item1 < rowsTop)
+        // {
+        //     // Console.WriteLine("Up " + (rowsTop, rowsBottom, colsLeft, colsRight));
+        //     var shift = (rowsBottom + 1) - rowsTop;
+        //     // expand up
+        //     rowsTop = rowsTop - shift;
+        //     foreach (var block in blocks)
+        //     {
+        //         newBlocks.Add((block.Item1 - shift, block.Item2));
+        //     }
+        // }
 
-        return (false, blocks, (rowsTop, rowsBottom, colsLeft, colsRight));
+        // foreach (var b in newBlocks)
+        // {
+        //     blocks.Add(b);
+        // }
+
+        // newBlocks = new HashSet<(int, int)>();
+        // if (coord.Item2 > colsRight)
+        // {
+        //     // Console.WriteLine("Right " + (rowsTop, rowsBottom, colsLeft, colsRight));
+        //     // expand right
+        //     var shift = (colsRight + 1) - colsLeft;
+        //     colsRight = colsRight + shift;
+        //     foreach (var block in blocks)
+        //     {
+        //         newBlocks.Add((block.Item1, block.Item2 + shift));
+        //     }
+        // }
+        // else if (coord.Item1 < colsLeft)
+        // {
+        //     // Console.WriteLine("left " + (rowsTop, rowsBottom, colsLeft, colsRight));
+        //     // expand left
+        //     var shift = (colsRight + 1) - colsLeft;
+        //     colsLeft = colsLeft - shift;
+
+        //     foreach (var block in blocks)
+        //     {
+        //         newBlocks.Add((block.Item1, block.Item2 - shift));
+        //     }
+        // }
+        // foreach (var b in newBlocks)
+        // {
+        //     blocks.Add(b);
+        // }
+
+        // // Console.WriteLine(string.Join(" ", blocks));
+
+        // if (blocks.Contains(coord))
+        // {
+        //     return (true, blocks, (rowsTop, rowsBottom, colsLeft, colsRight));
+        // }
+
+        // return (false, blocks, (rowsTop, rowsBottom, colsLeft, colsRight));
     }
 
     public static bool IsBlockBlocked(Dictionary<(int, int), char> garden, (int, int) coord)
