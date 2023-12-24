@@ -7,7 +7,7 @@ public class Program
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        Console.WriteLine(DayTwentyOne.Handle());
+        Console.WriteLine(DayTwentyFour.Handle());
 
         stopwatch.Stop();
         Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);

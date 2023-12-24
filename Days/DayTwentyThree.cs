@@ -11,7 +11,7 @@ public static class DayTwentyThree
 
     public static long HandleStepOne()
     {
-        var input = InputReader.Get(".\\input\\day_seven_input.txt");
+        var input = InputReader.Get(".\\input\\twentyThree.txt");
         return -1;
     }
 
@@ -19,5 +19,16 @@ public static class DayTwentyThree
     {
         var input = InputReader.Get(".\\input\\day_seven_input.txt");
         return -1;
+    }
+}
+
+class InputObject
+{
+    public static int Value { get; set; }
+
+    public InputObject(string inputLine)
+    {
+        inputLine.Split("").First();
+        inputLine.Split("").Last();
     }
 }
